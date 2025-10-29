@@ -11,11 +11,22 @@ namespace BankSystem.Controllers
     {
         private readonly IClientService _clientService;
         private readonly IEmployeeService _employeeService;
+        private readonly IBankUserService _bankUserService;
 
-        public ClientController(IClientService clientService, IEmployeeService employeeService)
+        public ClientController(IClientService clientService, IEmployeeService employeeService,IBankUserService bankUserService)
         {
             _clientService = clientService;
             _employeeService = employeeService;
+            _bankUserService = bankUserService;
+        }
+
+        //---------------------Client----------------------
+
+        [HttpPost("Client")]
+        public async Task<IActionResult> AddClient(ClientDto clientdto)
+        {
+            var client = _bankUserService.AddClient(clientdto);
+            return Ok(client);
         }
 
         

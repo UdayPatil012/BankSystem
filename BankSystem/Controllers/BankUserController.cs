@@ -34,6 +34,13 @@ namespace BankSystem.Controllers
             return Ok(employee);
         }
 
+        //[HttpGet("AllEmployees")]
+        //public async Task<IActionResult> GetAllEmployees(int pageNumber = 1, int pageSize = 10)
+        //{
+        //    var result = await _bankUserService.ge
+        //    return Ok(result);
+        //}
+
         //[HttpPost("Employee/{clientId}")]
         //public async Task<IActionResult> AddEmployee(int clientId, [FromBody] EmployeeDto employeeDto)
         //{

@@ -58,17 +58,6 @@ namespace BankSystem.Service.JWT
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        private string GetRoleName(int userType)
-        {
-            return userType switch
-            {
-                0 => "SuperAdmin",
-                1 => "BankUser",
-                2 => "Client",
-                _ => "Unknown"
-            };
-        }
     }
 }
 
