@@ -4,6 +4,7 @@ namespace BankSystem.Repository.IRepository
 {
     public interface IPaymentRepository
     {
+        Task<IEnumerable<Payment>> GetAllPayment();
         Task AddPayment(Payment payment);
         Task UpdatePayment(Payment payment);
         Task DeletePayment(Payment payment);

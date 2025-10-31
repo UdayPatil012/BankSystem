@@ -8,7 +8,7 @@ namespace BankSystem.Service.IService
     public interface IClientService
     {
         // Employees
-        Task<PagedResult<EmployeeDto>> GetMyEmployeesAsync(int clientId, int pageNumber = 1, int pageSize = 10);
+        Task<List<EmployeeDto>> GetMyEmployeesAsync(int clientId);
 
         Task<EmployeeDto> AddEmployeeAsync(EmployeeDto employeeDto, int clientId);
         Task UpdateEmployeeAsync(EmployeeDto employeeDto, int employeeId);
@@ -17,7 +17,7 @@ namespace BankSystem.Service.IService
 
         // Documents
         Task<IEnumerable<DocumentDto>> GetMyDocumentsAsync(int clientId);
-        Task<DocumentDto> UploadDocumentAsync(DocumentDto documentDto, int clientId);
+        Task<DocumentDto> UploadDocumentAsync(DocumentDto documentDto, IFormFile file, int clientId);
         Task<DocumentDto?> GetDocumentByIdAsync(int documentId);
 
         // Salary Disbursement

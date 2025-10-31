@@ -4,6 +4,8 @@ using BankSystem.Model;
 using BankSystem.Repository;
 using BankSystem.Repository.IRepository;
 using BankSystem.Service.IService;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace BankSystem.Service
 {
@@ -33,27 +35,33 @@ namespace BankSystem.Service
         }
 
         // -------------------- Clients --------------------
-        public async Task<PagedResult<User>> GetAllClientsAsync(int pageNumber = 1, int pageSize = 10)
+        //public async Task<PagedResult<User>> GetAllClientsAsync(int pageNumber = 1, int pageSize = 10)
+        //{
+        //    var users = await userRepository.GetAll();
+        //    var clients = users.Where(u => u.UserType == UserType.Client);
+
+        //    int totalCount = clients.Count();
+
+        //    var pagedClients = clients
+        //        .Skip((pageNumber - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToList();
+
+        //    return new PagedResult<User>
+        //    {
+        //        Data = pagedClients,
+        //        TotalCount = totalCount,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    };
+        //}
+
+        public async Task<List<User>> GetAllClientsAsync()
         {
             var users = await userRepository.GetAll();
-            var clients = users.Where(u => u.UserType == UserType.Client);
-
-            int totalCount = clients.Count();
-
-            var pagedClients = clients
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return new PagedResult<User>
-            {
-                Data = pagedClients,
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+            var clients = users.Where(u => u.UserType == UserType.Client).ToList();
+            return clients;
         }
-
         public async Task<User> GetClientById(int clientId)
         {
             var client = await userRepository.GetById(clientId);
@@ -62,19 +70,21 @@ namespace BankSystem.Service
             return client;
         }
 
-        public async Task AddClient(ClientDto clientDto)
+        public async Task<User> AddClient(ClientDto clientDto)
         {
             var client = new User
             {
+                BankId = 1,
                 UserName = clientDto.UserName,
                 Password = clientDto.Password,
                 Email = clientDto.Email,
                 UserType = UserType.Client,
                 CompanyName = clientDto.CompanyName,
                 UserAddress = clientDto.UserAddress,
-                ClientStatus = ClientStatus.Unverified
+                ClientStatus = ClientStatus.Unverified,
+                Balance = clientDto.balance
             };
-            await userRepository.Add(client);
+            return await userRepository.Add(client);
         }
 
         public async Task UpdateClient(int clientId, ClientDto clientDto)
@@ -166,6 +176,10 @@ namespace BankSystem.Service
             await employeeRepository.UpdateEmployee(employee);
         }
 
+        public async Task GetAllEmployyes()
+        {
+            var employees = employeeRepository.GetAllEmployees();
+        }
         // -------------------- Beneficiaries --------------------
         public async Task<IEnumerable<Beneficiary>> GetBeneficiariesByClientId(int clientId)
         {
@@ -217,6 +231,11 @@ namespace BankSystem.Service
             var ben = await GetBeneficiaryById(beneficiaryId);
             await beneficiaryRepository.DeleteBeneficiary(ben);
             // Custom reject logic if needed
+        }
+
+        public async Task GetAllBeneficiary()
+        {
+            var ben = await beneficiaryRepository.GetAllBeneficiaries();
         }
 
         // -------------------- Documents --------------------
@@ -273,6 +292,12 @@ namespace BankSystem.Service
         }
 
         // -------------------- Payments --------------------
+
+        public async Task<IEnumerable<Payment>> GetAllPayment()
+        {
+            return await paymentRepository.GetAllPayment();
+
+        }
         public async Task<IEnumerable<Payment>> GetPaymentsByClientId(int clientId)
         {
             return await paymentRepository.GetPaymentsByClientId(clientId);
@@ -312,6 +337,11 @@ namespace BankSystem.Service
         }
 
         // -------------------- Salary Disbursement --------------------
+
+        public async Task<IEnumerable<SalaryDisbursement>> GetAllSalary()
+        {
+            return await  salaryRepository.GetAllSalary();
+        }
         public async Task<IEnumerable<SalaryDisbursement>> GetDisbursementsByClientId(int clientId)
         {
             return await salaryRepository.GetDisbursementsByClientId(clientId);
@@ -329,8 +359,19 @@ namespace BankSystem.Service
             return disbursement;
         }
 
-        public async Task AddSalaryDisbursement(SalaryDisbursementDto salaryDto, int employeeId, int clientId)
+        public async Task AddSalaryDisbursement(SalaryDisbursementDto salaryDto, int employeeId, int clientId, double amount)
         {
+
+            var client = await userRepository.GetById(clientId);
+            if (client == null || client.UserType != Enum.UserType.Client) throw new Exception("Invalid client.");
+            var employee = await employeeRepository.GetEmployeeById(employeeId);
+            if (employee == null) throw new InvalidOperationException("Employee Not Found");
+
+            if (amount <= 0)
+                throw new Exception("Invalid payment amount.");
+            if (client.Balance < amount)
+                throw new Exception("Insufficient balance.");
+
             var disbursement = new SalaryDisbursement
             {
                 EmployeeId = employeeId,

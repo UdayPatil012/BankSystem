@@ -5,7 +5,7 @@ namespace BankSystem.Repository.IRepository
     {
         Task<IEnumerable<User>> GetAll();
         Task<User?> GetById(int id);
-        Task Add(User user);
+        Task<User> Add(User user);
         Task Update(User user);
         Task Delete(User user);
     }

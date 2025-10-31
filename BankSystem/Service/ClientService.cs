@@ -14,6 +14,7 @@ namespace BankSystem.Service
         private readonly IBeneficiaryRepository beneficiaryRepository;
         private readonly IPaymentRepository paymentRepository;
         private readonly IUserRepository userrepository;
+        private readonly CloudinaryService cloudinaryservice;
 
         public ClientService(
             IEmployeeRepository employeeRepository,
@@ -21,7 +22,8 @@ namespace BankSystem.Service
             ISalaryDisbursement salaryDisbursementRepository,
             IBeneficiaryRepository beneficiaryRepository,
             IPaymentRepository paymentRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            CloudinaryService cloudinaryservice)
         {
             this.employeeRepository = employeeRepository;
             this.documentRepository = documentRepository;
@@ -29,19 +31,44 @@ namespace BankSystem.Service
             this.beneficiaryRepository = beneficiaryRepository;
             this.paymentRepository = paymentRepository;
             this.userrepository = userRepository;
+            this.cloudinaryservice = cloudinaryservice;
         }
 
         // ------------------- Employees -------------------
-        public async Task<PagedResult<EmployeeDto>> GetMyEmployeesAsync(int clientId, int pageNumber = 1, int pageSize = 10)
+        //public async Task<PagedResult<EmployeeDto>> GetMyEmployeesAsync(int clientId, int pageNumber = 1, int pageSize = 10)
+        //{
+        //    var employees = await employeeRepository.GetEmployeesByClientId(clientId);
+        //    if (!employees.Any()) throw new InvalidOperationException("No Employees Found");
+
+        //    var totalCount = employees.Count();
+
+        //    var pagedEmployees = employees
+        //        .Skip((pageNumber - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .Select(e => new EmployeeDto
+        //        {
+        //            EmployeeName = e.EmployeeName,
+        //            AccountNumber = e.AccountNumber,
+        //            EmployeeStatus = e.EmployeeStatus
+        //        })
+        //        .ToList();
+
+        //    return new PagedResult<EmployeeDto>
+        //    {
+        //        Data = pagedEmployees,
+        //        TotalCount = totalCount,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    };
+        //}
+
+        public async Task<List<EmployeeDto>> GetMyEmployeesAsync(int clientId)
         {
             var employees = await employeeRepository.GetEmployeesByClientId(clientId);
-            if (!employees.Any()) throw new InvalidOperationException("No Employees Found");
+            if (!employees.Any())
+                throw new InvalidOperationException("No Employees Found");
 
-            var totalCount = employees.Count();
-
-            var pagedEmployees = employees
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+            var employeeDtos = employees
                 .Select(e => new EmployeeDto
                 {
                     EmployeeName = e.EmployeeName,
@@ -50,14 +77,9 @@ namespace BankSystem.Service
                 })
                 .ToList();
 
-            return new PagedResult<EmployeeDto>
-            {
-                Data = pagedEmployees,
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+            return employeeDtos;
         }
+
 
         public async Task<EmployeeDto> AddEmployeeAsync(EmployeeDto employeeDto, int clientId)
         {
@@ -118,20 +140,27 @@ namespace BankSystem.Service
             });
         }
 
-        public async Task<DocumentDto> UploadDocumentAsync(DocumentDto documentDto, int clientId)
+        public async Task<DocumentDto> UploadDocumentAsync(DocumentDto documentDto,IFormFile file, int clientId)
         {
             if (clientId == 1 || clientId == 2)
             {
                 throw new InvalidOperationException("SuperAdmin Or BankUser cannot upload documents");
             }
+            if (file == null || file.Length == 0)
+                throw new InvalidOperationException("No file uploaded.");
+
+            var documentUrl = await cloudinaryservice.UploadDocumentAsync(file);
+
 
             var document = new Document
             {
                 DocumentName = documentDto.DocumentName,
                 DocumentType = documentDto.DocumentType,
                 DocumentVerifiedStatus = Enum.DocumentVerifiedStatus.Pending,
-                UserId = clientId
-            };
+                UserId = clientId,
+                DocumentUrl = documentUrl
+
+            };  
 
             await documentRepository.AddDocument(document);
             return documentDto;
@@ -151,6 +180,8 @@ namespace BankSystem.Service
         }
 
         // ------------------- Salary Disbursement -------------------
+
+        
         public async Task<IEnumerable<SalaryDisbursementDto>> GetMySalaryDisbursementsAsync(int clientId)
         {
             var salaries = await salaryDisbursementRepository.GetDisbursementsByClientId(clientId);

@@ -1,4 +1,5 @@
 ﻿using BankSystem.DTO;
+using BankSystem.Model;
 using BankSystem.Service;
 using BankSystem.Service.IService;
 using Microsoft.AspNetCore.Authorization;
@@ -34,34 +35,6 @@ namespace BankSystem.Controllers
             return Ok(employee);
         }
 
-        //[HttpGet("AllEmployees")]
-        //public async Task<IActionResult> GetAllEmployees(int pageNumber = 1, int pageSize = 10)
-        //{
-        //    var result = await _bankUserService.ge
-        //    return Ok(result);
-        //}
-
-        //[HttpPost("Employee/{clientId}")]
-        //public async Task<IActionResult> AddEmployee(int clientId, [FromBody] EmployeeDto employeeDto)
-        //{
-        //    await _bankUserService.AddEmployee(employeeDto, clientId);
-        //    return Ok(new { Message = "Employee added successfully." });
-        //}
-
-        //[HttpPut("Employee/{employeeId}")]
-        //public async Task<IActionResult> UpdateEmployee(int employeeId, [FromBody] EmployeeDto employeeDto)
-        //{
-        //    await _bankUserService.UpdateEmployee(employeeId, employeeDto);
-        //    return Ok(new { Message = "Employee updated successfully." });
-        //}
-
-        //[HttpDelete("Employee/{employeeId}")]
-        //public async Task<IActionResult> DeleteEmployee(int employeeId)
-        //{
-        //    await _bankUserService.DeleteEmployee(employeeId);
-        //    return Ok(new { Message = "Employee deleted successfully." });
-        //}
-
         [HttpPost("Employee/{employeeId}/Approve")]
         public async Task<IActionResult> ApproveEmployee(int employeeId)
         {
@@ -80,9 +53,9 @@ namespace BankSystem.Controllers
         //----------------------- Client Management -----------------------
 
         [HttpGet("Client/All")]
-        public async Task<IActionResult> GetClient(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetClient()
         {
-            var result = await _bankUserService.GetAllClientsAsync(pageNumber, pageSize);
+            var result = await _bankUserService.GetAllClientsAsync();
             return Ok(result);
         }
 
@@ -109,15 +82,15 @@ namespace BankSystem.Controllers
 
         [HttpPut("Client/{clientId}/UpdateClient")]
 
-        public async Task<IActionResult>UpdateClient(int clientid, ClientDto clientdto)
+        public async Task<IActionResult> UpdateClient(int clientid, ClientDto clientdto)
         {
-            await _bankUserService.UpdateClient(clientid,clientdto);
+            await _bankUserService.UpdateClient(clientid, clientdto);
             return Ok(new { Message = "Client Updated SuccessFully" });
         }
 
         [HttpDelete("Client/{clientId}/DeleteClient")]
 
-        public async Task<IActionResult>DeleteClient(int clientId)
+        public async Task<IActionResult> DeleteClient(int clientId)
         {
             await _bankUserService.DeleteClient(clientId);
             return Ok(new { Message = "Client Deleted Successfully" });
@@ -126,7 +99,7 @@ namespace BankSystem.Controllers
 
         //----------------------- Beneficiary Management -----------------------
 
-        [HttpGet("Beneficiaries/{clientId}")]
+        [HttpGet("Beneficiaries/client/{clientId}")]
         public async Task<IActionResult> GetBeneficiariesByClientId(int clientId)
         {
             var beneficiaries = await _bankUserService.GetBeneficiariesByClientId(clientId);
@@ -152,6 +125,14 @@ namespace BankSystem.Controllers
         {
             await _bankUserService.RejectBeneficiary(beneficiaryId);
             return Ok(new { Message = "Beneficiary rejected successfully." });
+        }
+
+        [HttpPost("AllBeneficiaries")]
+
+        public async Task<IActionResult> GetAllBeneficiaries()
+        {
+            await _bankUserService.GetAllBeneficiary();
+            return Ok();
         }
 
 
@@ -188,6 +169,14 @@ namespace BankSystem.Controllers
 
         //----------------------- Payment Management -----------------------
 
+
+        [HttpGet("GetAllPayments")]
+        public async Task<IActionResult> GetAllPayment()
+        {
+            var pay = await _bankUserService.GetAllPayment();
+            return Ok(pay);
+        }
+
         [HttpGet("Payments/Client/{clientId}")]
         public async Task<IActionResult> GetPaymentsByClientId(int clientId)
         {
@@ -217,7 +206,17 @@ namespace BankSystem.Controllers
         }
 
 
+
+
         //----------------------- Salary Disbursement -----------------------
+
+        [HttpGet("GetAllSalary")]
+
+        public async Task<IActionResult> GetAllSalary()
+        {
+            var salary = await _bankUserService.GetAllSalary();
+            return Ok(salary);
+        }
 
         [HttpGet("SalaryDisbursements/Client/{clientId}")]
         public async Task<IActionResult> GetDisbursementsByClientId(int clientId)

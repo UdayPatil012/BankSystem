@@ -18,6 +18,11 @@ namespace BankSystem.Repository
             await context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<SalaryDisbursement>> GetAllSalary()
+        {
+            return await context.SalaryDisbursements.ToListAsync();
+        }
+
         public async Task UpdateDisbursement(SalaryDisbursement salaryDisbursement)
         {
             context.SalaryDisbursements.Update(salaryDisbursement);

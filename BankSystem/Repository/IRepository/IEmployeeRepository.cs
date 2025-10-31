@@ -8,6 +8,7 @@ namespace BankSystem.Repository.IRepository
         Task<Employee?> GetEmployeeById(int employeeId); 
         Task AddEmployee(Employee employee); 
         Task UpdateEmployee(Employee employee); 
-        Task DeleteEmployee(Employee employee); 
+        Task DeleteEmployee(Employee employee);
+        public Task GetAllEmployees();
     }
 }

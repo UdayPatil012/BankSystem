@@ -4,6 +4,7 @@ namespace BankSystem.Repository.IRepository
 {
     public interface ISalaryDisbursement
     {
+        Task<IEnumerable<SalaryDisbursement>> GetAllSalary();
         Task AddDisbursement(SalaryDisbursement salaryDisbursement);
         Task UpdateDisbursement(SalaryDisbursement salaryDisbursement);
         Task DeleteDisbursement(SalaryDisbursement salaryDisbursement);

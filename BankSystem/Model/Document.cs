@@ -23,6 +23,8 @@ namespace BankSystem.Model
 
         public DateTime UploadDate { get; set; } = DateTime.Now;
 
-        public DocumentVerifiedStatus DocumentVerifiedStatus { get; set; }= DocumentVerifiedStatus.Pending;
+        public string? DocumentUrl { get; set; }
+
+        public DocumentVerifiedStatus DocumentVerifiedStatus { get; set; } = DocumentVerifiedStatus.Pending;
     }
 }

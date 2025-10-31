@@ -1,4 +1,5 @@
 using BankSystem.Data;
+using BankSystem.Model;
 using BankSystem.Repository;
 using BankSystem.Repository.IRepository;
 using BankSystem.Repository.JWT;
@@ -47,9 +48,14 @@ namespace BankSystem
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IAuthService,AuthService>();
+            builder.Services.AddScoped<CloudinaryService>();
+            builder.Services.AddScoped<ICaptchaService, CaptchaService>();
+            
 
             builder.Services.AddDbContext<BankContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

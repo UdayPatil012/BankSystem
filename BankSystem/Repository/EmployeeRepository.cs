@@ -44,5 +44,10 @@ namespace BankSystem.Repository
             context.Employees.Update(employee);
             await context.SaveChangesAsync();
         }
+
+        public async Task GetAllEmployees()
+        {
+            var employees = await context.Employees.ToListAsync();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using BankSystem.Service;
 using BankSystem.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace BankSystem.Controllers
 {
@@ -13,7 +14,7 @@ namespace BankSystem.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IBankUserService _bankUserService;
 
-        public ClientController(IClientService clientService, IEmployeeService employeeService,IBankUserService bankUserService)
+        public ClientController(IClientService clientService, IEmployeeService employeeService, IBankUserService bankUserService)
         {
             _clientService = clientService;
             _employeeService = employeeService;
@@ -23,19 +24,19 @@ namespace BankSystem.Controllers
         //---------------------Client----------------------
 
         [HttpPost("Client")]
-        public async Task<IActionResult> AddClient(ClientDto clientdto)
+        public async Task<IActionResult> AddClient([FromBody]ClientDto clientdto)
         {
-            var client = _bankUserService.AddClient(clientdto);
+            var client = await _bankUserService.AddClient(clientdto);
             return Ok(client);
         }
 
-        
+
         // ------------------- Employees -------------------
 
         [HttpGet("employees")]
-        public async Task<IActionResult> GetEmployees(int clientId, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetEmployees(int clientId)
         {
-            var result = await _clientService.GetMyEmployeesAsync(clientId, pageNumber, pageSize);
+            var result = await _clientService.GetMyEmployeesAsync(clientId);
             return Ok(result);
         }
 
@@ -77,9 +78,9 @@ namespace BankSystem.Controllers
         }
 
         [HttpPost("{clientId}/documents")]
-        public async Task<IActionResult> UploadDocument(int clientId, [FromBody] DocumentDto documentDto)
+        public async Task<IActionResult> UploadDocument(DocumentDto dto,IFormFile file, int clientid)
         {
-            var result = await _clientService.UploadDocumentAsync(documentDto, clientId);
+            var result = await _clientService.UploadDocumentAsync(dto,file,clientid);
             return Ok(result);
         }
 
@@ -96,6 +97,13 @@ namespace BankSystem.Controllers
         public async Task<IActionResult> GetSalaryDisbursementById(int id)
         {
             var disbursement = await _clientService.GetSalaryDisbursementByIdAsync(id);
+            return Ok(disbursement);
+        }
+
+        [HttpPost("AddDisbursement")]
+        public async Task<IActionResult> AddSalaryDisbursement(SalaryDisbursementDto salary, int employyeid, int clientid, double amount)
+        {
+            var disbursement = _bankUserService.AddSalaryDisbursement(salary, employyeid, clientid, amount);
             return Ok(disbursement);
         }
 

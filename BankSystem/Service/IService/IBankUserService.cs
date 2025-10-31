@@ -6,9 +6,9 @@ namespace BankSystem.Service.IService
     public interface IBankUserService
     {
         // -------------------- Clients --------------------
-        Task<PagedResult<User>> GetAllClientsAsync(int pageNumber, int pageSize);
+        Task<List<User>> GetAllClientsAsync();
         Task<User> GetClientById(int clientId);
-        Task AddClient(ClientDto clientDto);
+        Task<User> AddClient(ClientDto clientDto);
         Task UpdateClient(int clientId, ClientDto clientDto);
         Task DeleteClient(int clientId);
         Task ApproveClient(int clientId);
@@ -31,6 +31,7 @@ namespace BankSystem.Service.IService
         Task DeleteBeneficiary(int beneficiaryId);
         Task ApproveBeneficiary(int beneficiaryId);
         Task RejectBeneficiary(int beneficiaryId);
+        Task GetAllBeneficiary();
 
         // -------------------- Documents --------------------
         Task<IEnumerable<Document>> GetDocumentsByClientId(int clientId);
@@ -42,6 +43,7 @@ namespace BankSystem.Service.IService
         Task RejectDocument(int documentId);
 
         // -------------------- Payments --------------------
+        Task<IEnumerable<Payment>> GetAllPayment();
         Task<IEnumerable<Payment>> GetPaymentsByClientId(int clientId);
         Task<Payment> GetPaymentById(int paymentId);
         Task ProcessPayment(PaymentDto paymentDto, int beneficiaryId, int clientId);
@@ -49,10 +51,11 @@ namespace BankSystem.Service.IService
         Task RejectPayment(int paymentId);
 
         // -------------------- Salary Disbursement --------------------
+        Task<IEnumerable<SalaryDisbursement>> GetAllSalary();
         Task<IEnumerable<SalaryDisbursement>> GetDisbursementsByClientId(int clientId);
         Task<IEnumerable<SalaryDisbursement>> GetDisbursementsByEmployeeId(int employeeId);
         Task<SalaryDisbursement> GetDisbursementById(int disbursementId);
-        Task AddSalaryDisbursement(SalaryDisbursementDto salaryDto, int employeeId, int clientId);
+        Task AddSalaryDisbursement(SalaryDisbursementDto salaryDto, int employeeId, int clientId, double amount);
         Task UpdateSalaryDisbursement(int disbursementId, SalaryDisbursementDto salaryDto);
         Task DeleteSalaryDisbursement(int disbursementId);
         Task ApproveSalaryDisbursement(int disbursementId);

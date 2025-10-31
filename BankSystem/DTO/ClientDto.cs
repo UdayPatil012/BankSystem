@@ -16,5 +16,11 @@ namespace BankSystem.DTO
         public string CompanyName { get; set; }
 
         public string UserAddress { get; set; }
+
+        public double balance { get; set; }
+
+        public DocumentType? DocumentType { get; set; }
+
+        public string? DocumentUrl { get; set; }
     }
 }

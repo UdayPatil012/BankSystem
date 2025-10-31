@@ -12,6 +12,11 @@ namespace BankSystem.Repository
 
         public PaymentRepository(BankContext context) => this.context = context;
 
+        public async Task<IEnumerable<Payment>>  GetAllPayment()
+        {
+           return await context.Payments.ToListAsync();
+        }
+
         public async Task AddPayment(Payment payment)
         {
             await context.Payments.AddAsync(payment);
